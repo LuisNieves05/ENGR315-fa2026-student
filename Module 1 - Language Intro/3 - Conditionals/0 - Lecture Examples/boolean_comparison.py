@@ -1,19 +1,9 @@
-# some random variable to compare
-t = 30
+random = generate_random_number(0,100)
 
-print("Using t = "+str(t))
-
-# perform boolean equality comparison
-print(str(t)+" == 40 is " + str(t == 40))
-
-# perform boolean not equality
-print(str(t)+" != 40 is " + str(t != 40))
-
-# perform greater than or equal
-print(str(t)+" >= 40 is " + str(t >= 40))
-
-# perform greater than
-print(str(t)+" > 40 is " + str(t > 40))
-
-# perform less than
-print(str(t)+" < 40 is " + str(t < 40))
+for p in range(0, 10):
+    if random < 50:
+        print("The number is less than 50")
+    elif random == 50:
+        print("The number is equal to 50")
+    else:
+        print("The number is greater than 50")
