@@ -10,9 +10,25 @@ def my_pi(target_error):
     """
 
     ### YOUR CODE HERE ###
+    a0 = 1
+    b0 = 1 / math.sqrt(2)
+    t0 = 1 / 4 
+    p0 = 1
 
-    # change this so an actual value is returned
-    return 0
+    for i in range(1, 10):
+        a = ((a0 + b0) / 2 )
+        b = math.sqrt(a0*b0)
+        t = t0-p0*(a0-a)**2
+        p = 2*p0
+
+        a0 = a 
+        b0 = b
+        t0 = t
+        p0 = p
+
+    pi_estimate = ((a0 + b0)**2) / (4*(t0))
+
+    return(pi_estimate)
 
 
 

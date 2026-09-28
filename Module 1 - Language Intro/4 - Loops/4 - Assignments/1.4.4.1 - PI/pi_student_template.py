@@ -30,8 +30,13 @@ for i in range(1, 10):
     ### YOUR CODE HERE ###
     a = ((a0 + b0) / 2 )
     b = math.sqrt(a0*b0)
-    t = ((t0-p0)*(a0-a0)**2)
+    t = t0-p0*(a0-a)**2
     p = 2*p0
+
+    a0 = a 
+    b0 = b
+    t0 = t
+    p0 = p
 
 
     # print out the current loop iteration. This is present to have something in the loop.
@@ -42,7 +47,7 @@ Step 3: After iterating 10 times, calculate the final value for PI
 """
 
 # modify this line below to estimate PI
-pi_estimate = ((a + b)**2) / (4*(t))
+pi_estimate = ((a0 + b0)**2) / (4*(t0))
 
 print("Final estimate for PI: ", pi_estimate)
 print("Error on estimate: ", abs(pi_estimate - math.pi))
