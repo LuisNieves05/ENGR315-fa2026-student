@@ -1,6 +1,9 @@
+import writing_tensile_utils
+print("Utility file being used:", writing_tensile_utils.__file__)
 from writing_tensile_utils import *
 import os
 import sys
+
 
 
 def generate_csv_file(filename, results):
@@ -12,29 +15,17 @@ def generate_csv_file(filename, results):
     """
 
     # Step 1: create a variable to hold the file name
+    output_file_name = filename
 
-    # uncomment this line
-    # output_file_name = ### your code here ###
+    # Step 2: open the file in write mode
+    file = open(output_file_name, "w")
 
-    # Step 2: use open() to open the file in write mode. Set the return of open()
-    # to a variable name that will be your file handle
-
-    # uncomment the line below
-    # file = ### your code here ###
-
-    # Step 3: write out the header for the CSV file. This string is provided for you so
-    # your data can be loaded and checked. Use write().
+    # Step 3: write the CSV header
     file_header = "Sample_Name,Material_Type,Tensile_Strength,Fracture_Strain,Elastic_Modulus,Yield_Strength\n"
+    file.write(file_header)
 
-    # write header string out to file
-    # file.### your code here ###
-
-    # Step 4: Iterate through the list of results. Each sample will contain the data for an individual test
-    # The Materials Object will contain sample name, type, tensile strength, fracture strain, elastic modulus,
-    # and yield strength data
+    # Step 4: iterate through the list of results
     for r in results:
-        # Each object in the results list is of class SampleMaterial. This is just a dummy class to hold variables
-        # in a single object. For your ease they have been broken out into individual variable names
         name = r.name
         material_type = r.material_type
         tensile_strength = r.tensile_strength
@@ -42,30 +33,23 @@ def generate_csv_file(filename, results):
         modulus = r.elastic_modulus
         yield_strength = r.yield_strength
 
-        # Step 5: Stitch together a string, then write out the string via write().
-        # Many variables above must be converted to a string via (). Commas also must be manually
-        # stitched between each variable in the output. Do not round the data
-        # Make sure an endline character '\n' is always at the end of your string!
+        # Step 5: create a string for each sample
+        string_to_write = name + "," + material_type + "," + str(tensile_strength) + "," + str(fracture_strain) + "," + str(modulus) + "," + str(yield_strength) + "\n"
 
-        # uncomment the line below
-        # string_to_write = ### your code here ###
+        # Write the sample to the CSV file
+        file.write(string_to_write)
 
-        # Finally, given that long string, write it to a file
+    # Close the file after writing all samples
+    file.close()
 
-        ### your code here ###
-
-    # close the file once all writing is complete
-    # uncomment this line before you're done
-    ##file.close()
-
-    # since we got here, it must have worked.
     return True
+
 
 
 if __name__ == "__main__":
 
     # get path to data/ folder
-    path_to_tensile_folder = "../../../data/tensile/"
+    path_to_tensile_folder = "data/tensile/"
 
     # list to hold all sample results
     results = []

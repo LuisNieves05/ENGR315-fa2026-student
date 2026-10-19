@@ -60,10 +60,18 @@ def calculate_stress(force, sample_diameter):
     :return: An array of stresses experienced by the sample in MegaPascals (MPa)
     """
 
-    ### YOUR SOLUTION FROM STEP 1 TEMPLATE HERE ###
+    # calculate the cross-section area (mm^2)
+    ### your code here ###
 
-    return None
+    cross_area = math.pi*(sample_diameter/2)**2
 
+    # calculate stress (MPa) from load (kN) and cross-sectional area
+    ### your code here ###
+    stress = force / cross_area * 1000 
+
+    # delete this line and replace it with your own
+
+    return stress
 
 def calculate_max_strength_strain(strain, stress):
     """
@@ -77,53 +85,37 @@ def calculate_max_strength_strain(strain, stress):
 
     ### YOUR SOLUTION FROM STEP 2 TEMPLATE HERE ###
 
-    return -1, -1
+   
+    # calculate the maximum stress experienced
+    ultimate_tensile_stress = np.max(stress)
+
+    # calculate the maximum strain experienced
+    fracture_strain = np.max(strain)
+
+    return ultimate_tensile_stress, fracture_strain
 
 def calculate_elastic_modulus(strain, stress):
-    """
-        Given a set of stress strain data, use the Secant Modulus at 40% method to determine
-        the elastic modulus
-        :param strain:
-        :param stress:
-        :return:
-        linear_index: the index within the strain/stress data that is the end of the linear region
-        slope: the slope for the linear region of the strain/stress data
-        intercept: y-intercept for linear region best fit of strain/stress data
-    """
-
-    # dummy variables the function should over write
-    linear_index = None
-    slope = None
-    intercept = None
-
-    ### YOUR SOLUTION FROM STEP 3 TEMPLATE HERE ###
-
+    """Fit a line through the stress-strain data up to 40% of peak stress."""
+    diffs = np.abs(stress - 0.4 * np.max(stress))
+    linear_index = int(np.argmin(diffs))
+    linear_stress = stress[:linear_index]
+    linear_strain = strain[:linear_index]
+    if len(linear_strain) < 2:
+        raise ValueError("Not enough points to estimate elastic modulus.")
+    slope, intercept = np.polyfit(linear_strain, linear_stress, 1)
     return linear_index, slope, intercept
 
+
 def calculate_percent_offset(slope, strain, stress):
-    """
-    Determine the 0.2% Offset Yield by identifying the intercept with the stress curve and a parallel line
-
-    :param slope: Slope of the offset line. This should be the elastic modulus
-    :param strain: An array of Strain data (mm/mm, dimensionless)
-    :param stress: An array of Stress data
-    :return:
-    offset_line: the y-values for the 0.2% offset line
-    intercept_index: The index where the offset line and the strain line intersect
-    """
-    # set the desired offset for the line
-    offset = 0.002
-
-    # calculate the offset line: y=m(x-0.002) + 0
-    offset_line = None
-
-    # measure distance from all points on graph to this line. Consider using the
-    # abs() method to ensure values are positive
-    distance = None
-
-    # use argmin to find the index where the distance is minimal
-    intercept_index = -1
-
+    """Compute the 0.2% offset line and locate its yield intersection."""
+    offset_line = slope * (strain - 0.002)
+    # Search after offset strain, before the peak, to avoid an early false intersection.
+    peak_index = int(np.argmax(stress))
+    candidates = np.flatnonzero((strain >= 0.002) & (np.arange(len(strain)) <= peak_index))
+    if len(candidates) == 0:
+        raise ValueError("No valid points to determine the 0.2% offset yield.")
+    distance = np.abs(stress[candidates] - offset_line[candidates])
+    intercept_index = int(candidates[np.argmin(distance)])
     return offset_line, intercept_index
 
 if __name__ == "__main__":
@@ -134,11 +126,9 @@ if __name__ == "__main__":
 
     # modify this line to select different samples in the material folder
     sample_name = "C01A1045CR_1"
-
-
     ### Do not modify below this line ###
 
-    path_to_directory = "../../../data/tensile/"
+    path_to_directory = "data/tensile/"
     path_to_samples = path_to_directory + material_folder + "/"
 
     # manually parse file to get gage diameter and then calculate cross-sectional area
@@ -242,6 +232,3 @@ if __name__ == "__main__":
     plt.show()
 
     print("Done!")
-
-
-

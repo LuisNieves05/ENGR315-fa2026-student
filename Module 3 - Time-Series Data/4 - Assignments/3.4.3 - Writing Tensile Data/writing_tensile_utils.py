@@ -71,7 +71,14 @@ def calculate_stress(force, sample_diameter):
 
     # copy your calculate_stress() from Tensile Testing here
 
-    return None
+    # Calculate cross-sectional area (mm^2)
+    cross_area = math.pi * (sample_diameter / 2)**2
+
+    # Convert force (kN) to stress (MPa)
+    stress = force / cross_area * 1000
+
+    return stress
+
 
 
 def calculate_max_strength_strain(strain, stress):
@@ -85,8 +92,13 @@ def calculate_max_strength_strain(strain, stress):
     """
 
     # copy your calculate_max_strength_strain() from Tensile Testing here
+    ultimate_tensile_stress = np.max(stress)
 
-    return -1, -1
+    # calculate the maximum strain experienced
+    fracture_strain = np.max(strain)
+
+    return ultimate_tensile_stress, fracture_strain
+
 
 
 def calculate_elastic_modulus(strain, stress):
@@ -102,8 +114,15 @@ def calculate_elastic_modulus(strain, stress):
     """
 
     # copy your calculate_elastic_modulus() from Tensile Testing here
+    diffs = np.abs(stress - 0.4 * np.max(stress))
+    linear_index = int(np.argmin(diffs))
+    linear_stress = stress[:linear_index]
+    linear_strain = strain[:linear_index]
+    if len(linear_strain) < 2:
+        raise ValueError("Not enough points to estimate elastic modulus.")
+    slope, intercept = np.polyfit(linear_strain, linear_stress, 1)
+    return linear_index, slope, intercept
 
-    return None, None, None
 
 
 def calculate_percent_offset(slope, strain, stress):
@@ -118,8 +137,16 @@ def calculate_percent_offset(slope, strain, stress):
     """
 
     # copy your calculate_percent_offset() from Tensile Testing here
+    offset_line = slope * (strain - 0.002)
+    # Search after offset strain, before the peak, to avoid an early false intersection.
+    peak_index = int(np.argmax(stress))
+    candidates = np.flatnonzero((strain >= 0.002) & (np.arange(len(strain)) <= peak_index))
+    if len(candidates) == 0:
+        raise ValueError("No valid points to determine the 0.2% offset yield.")
+    distance = np.abs(stress[candidates] - offset_line[candidates])
+    intercept_index = int(candidates[np.argmin(distance)])
+    return offset_line, intercept_index
 
-    return None, -1
 
 
 def calculate_yield_strength(strain, stress, modulus):
