@@ -26,8 +26,9 @@ def load_tensile_data(_path: str):
     """
 
     # YOUR CODE HERE #
+    _df = pd.read_csv(_path)
 
-    return None
+    return _df
 
 
 def select_material(_df, _material: str):
@@ -39,8 +40,11 @@ def select_material(_df, _material: str):
     """
 
     # YOUR CODE HERE #
+    myMaterial = _df[_df['Material_Type']== _material]
 
-    return None
+
+    return myMaterial
+
 
 
 def select_strong(_df, _material: str, _min_yield: float):
@@ -54,8 +58,9 @@ def select_strong(_df, _material: str, _min_yield: float):
     """
 
     # YOUR CODE HERE #
+    selectedSamples = _df[(_df['Material_Type']==_material) & (_df['Yield_Strength'] > _min_yield)] 
 
-    return None
+    return selectedSamples
 
 
 def get_values(_df, _material: str, _column: str):
@@ -68,8 +73,9 @@ def get_values(_df, _material: str, _column: str):
     """
 
     # YOUR CODE HERE #
-
-    return None
+    np_array = _df[_df['Material_Type'] == _material][_column].to_numpy()
+    
+    return np_array 
 
 
 def material_statistics(_df, _material: str, _column: str):
@@ -83,8 +89,12 @@ def material_statistics(_df, _material: str, _column: str):
     """
 
     # YOUR CODE HERE #
+    selected = _df[_df['Material_Type'] == _material][_column]
 
-    return None
+    columnMean = np.mean(selected)
+    columnStd = np.std(selected, ddof=1)
+
+    return columnMean, columnStd
 
 
 def summary_table(_df, _columns: list):
@@ -99,8 +109,20 @@ def summary_table(_df, _columns: list):
     """
 
     # YOUR CODE HERE #
+    table = {}
 
-    return None
+    for material in _df['Material_Type'].unique():
+        table[material] = {}
+
+        for column in _columns:
+            selected = _df[_df['Material_Type'] == material][column]
+
+            mean = np.mean(selected)
+            std = np.std(selected, ddof=1)
+
+            table[material][column] = (mean, std)
+
+    return table
 
 
 if __name__ == '__main__':
@@ -110,7 +132,7 @@ if __name__ == '__main__':
     #   1045CR     199.19 +/- 10.69       606.03 +/- 17.53
     #   2024       74.61 +/- 15.63        342.71 +/- 24.2
     #   PMMA       3.09 +/- 0.2           49.41 +/- 3.04
-    path_to_file = '../../../data/tensile/tensile_data.csv'
+    path_to_file = 'data/tensile/tensile_data.csv'
 
     data = load_tensile_data(path_to_file)
     if data is None:
